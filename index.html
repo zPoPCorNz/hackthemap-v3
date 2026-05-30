@@ -60,7 +60,7 @@
                     <button class="btn btn-outline" style="color: #15803d; border-color: #bbf7d0;" onclick="simulateLogout()">Выйти</button>
                 </div>
 
-                <h2>Добавить туристический лайфхак</h2>
+                <h2>Добавить лайфхак</h2>
                 <form id="hack-form" onsubmit="handleFormSubmit(event)">
                     <div class="form-group">
                         <label for="form-place">Название места / Локация</label>
@@ -81,7 +81,7 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="form-text">Текст лайфхака (Суть совета и алгоритм экономии)</label>
+                        <label for="form-text">Описание лайфхака</label>
                         <textarea id="form-text" class="form-control" rows="4" placeholder="Например: После 19:00 действует скидка..." required></textarea>
                         <div class="error-msg" id="text-error">Текст лайфхака должен быть длиннее 10 символов.</div>
                     </div>
@@ -95,7 +95,7 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="form-url">Ссылка на источник / пруф (Необязательно)</label>
+                        <label for="form-url">Ссылка на источник (Необязательно)</label>
                         <input type="url" id="form-url" class="form-control" placeholder="https://example.com">
                     </div>
                     <button type="submit" class="btn" style="width: 100%; padding: 0.75rem;">Отправить на модерацию</button>
@@ -108,7 +108,7 @@
         &copy; 2026 Проект Разработки ПО «HackTheMap» | Студент: Anil_Dev | Практика УП.11
     </footer>
 
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAQXq7KVExfxMrlY07OchMCSXEeQHrwpQI&callback=initMap"></script>>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAQXq7KVExfxMrlY07OchMCSXEeQHrwpQI"></script>>
     
     <script src="script.js"></script>
 </body>
