@@ -11,7 +11,7 @@ let map = null;
 let markers = [];
 let infoWindow = null;
 
-// Безопасные JSON-стили темной темы для предотвращения сбоев API
+// Стили темной темы для карты
 const darkMapStyles = [
     { elementType: "geometry", stylers: [{ color: "#1e293b" }] },
     { elementType: "labels.text.stroke", stylers: [{ color: "#1e293b" }] },
@@ -20,37 +20,50 @@ const darkMapStyles = [
     { featureType: "water", elementType: "geometry", stylers: [{ color: "#0f172a" }] }
 ];
 
-// ИНИЦИАЛИЗАЦИЯ КАРТЫ
-function initMap() {
+// ИНИЦИАЛИЗАЦИЯ КАРТЫ (v3.56+)
+async function initMap() {
+    // Явно подгружаем необходимые библиотеки карт нового поколения
+    const { Map } = await google.maps.importLibrary("maps");
+    const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+
     const asokeCoordinates = { lat: 13.740263, lng: 100.558362 };
     
-    map = new google.maps.Map(document.getElementById("map-container"), {
+    map = new Map(document.getElementById("map-container"), {
         zoom: 13,
         center: asokeCoordinates,
+        mapId: "DEMO_MAP_ID", // Демо-id, обязательный для Advanced Markers и темных стилей
         styles: document.body.classList.contains('dark-theme') ? darkMapStyles : []
     });
 
     infoWindow = new google.maps.InfoWindow();
-    renderMarkers();
+    renderMarkers(AdvancedMarkerElement);
 }
 
-// ОТРИСОВКА МАРКЕРОВ
-function renderMarkers() {
+// ОТРИСОВКА СОВРЕМЕННЫХ МАРКЕРОВ
+function renderMarkers(AdvancedMarkerElement) {
     markers.forEach(m => m.setMap(null));
     markers = [];
 
     dataset.forEach(item => {
-        let markerColor = "red";
-        if (item.category === "Отели") markerColor = "blue";
-        else if (item.category === "Парки") markerColor = "green";
-        else if (item.category === "Еда") markerColor = "orange";
-        else if (item.category === "Развлечения") markerColor = "purple";
+        // Заменяем картинки на кастомные HTML-элементы, чтобы избежать ошибок HTTPS/Mixed Content
+        const pinElement = document.createElement("div");
+        pinElement.style.width = "18px";
+        pinElement.style.height = "18px";
+        pinElement.style.borderRadius = "50%";
+        pinElement.style.border = "2px solid white";
+        pinElement.style.boxShadow = "0 2px 6px rgba(0,0,0,0.3)";
 
-        const marker = new google.maps.Marker({
+        // Подбираем цвет под категорию места
+        if (item.category === "Отели") pinElement.style.backgroundColor = "#0284c7"; // Синий
+        else if (item.category === "Парки") pinElement.style.backgroundColor = "#10b981"; // Зеленый
+        else if (item.category === "Еда") pinElement.style.backgroundColor = "#f97316"; // Оранжевый
+        else pinElement.style.backgroundColor = "#a855f7"; // Развлечения — Фиолетовый
+
+        const marker = new AdvancedMarkerElement({
             position: { lat: item.lat, lng: item.lng },
             map: map,
             title: item.place,
-            icon: `http://maps.google.com/mapfiles/ms/icons/${markerColor}-dot.png`
+            content: pinElement
         });
 
         marker.addListener("click", () => {
@@ -63,7 +76,7 @@ function renderMarkers() {
             `;
             infoWindow.setContent(htmlContent);
             infoWindow.open(map, marker);
-            map.panTo(marker.getPosition());
+            map.panTo(marker.position);
         });
 
         markers.push(marker);
@@ -92,7 +105,7 @@ function switchScreen(screenName) {
     }
 }
 
-// РЕНДЕРИНГ СПИСКА
+// РЕНДЕРИНГ СПИСКА ЛАЙФХАКОВ
 function renderList(filterTag) {
     const container = document.getElementById('hacks-container');
     if (!container) return; 
@@ -123,10 +136,9 @@ function renderList(filterTag) {
     });
 }
 
-// ДИНАМИЧЕСКИЙ СИНХРОННЫЙ ПЕРЕКЛЮЧАТЕЛЬ ТЕМЫ
+// ПЕРЕКЛЮЧАТЕЛЬ ТЕМЫ
 function toggleTheme() {
     const isDark = document.body.classList.toggle('dark-theme');
-    
     if (map) {
         map.setOptions({
             styles: isDark ? darkMapStyles : []
@@ -188,11 +200,17 @@ function handleFormSubmit(event) {
     dataset.push(newHack);
     alert("Успешно отправлено!");
     document.getElementById('hack-form').reset();
-    if (typeof google !== 'undefined' && map) { renderMarkers(); }
+    
+    // Безопасный вызов отрисовки маркеров нового поколения
+    if (typeof google !== 'undefined' && map) { 
+        google.maps.importLibrary("marker").then(({ AdvancedMarkerElement }) => {
+            renderMarkers(AdvancedMarkerElement);
+        });
+    }
     switchScreen('list');
 }
 
-// Стартовый запуск при загрузке документа
+// Запуск списка при старте страницы
 document.addEventListener("DOMContentLoaded", () => {
     renderList('Все');
 });
