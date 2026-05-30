@@ -109,11 +109,11 @@ function renderList(filterTag) {
         card.className = 'hack-card';
         card.innerHTML = `
             <div class="hack-info">
-                <div class="hack-place">${item.place} • <span style="color: var(--primary); font-weight: 600;">${item.category}</span></div>
+                <div class="hack-place">${item.place} • <span style="color: var(--primary); font-weight: 700;">${item.category}</span></div>
                 <div class="hack-text">${item.text}</div>
                 <div class="hack-meta">
                     <span>Тег: <strong>#${item.tag}</strong></span>
-                    ${item.url ? `<a href="${item.url}" target="_blank">🔗 Открыть источник</a>` : '<span>ℹ️ Проверено сообществом</span>'}
+                    ${item.url ? `<a href="${item.url}" target="_blank">🔗 Источник</a>` : '<span>ℹ️ Проверено сообществом</span>'}
                 </div>
             </div>
             <div class="hack-rating">
