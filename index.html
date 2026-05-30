@@ -22,13 +22,7 @@
     <main>
         <section id="screen-map" class="screen active">
             <div id="map-container"></div>
-            
-        <div class="map-popup" id="map-popup">
-            <h3 id="popup-name">Название места</h3>
-            <p style="font-weight: 600; color: var(--primary);" id="popup-cat">Категория</p>
-            <p id="popup-text">Текст лайфхака...</p>
-            <button class="btn" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;" onclick="document.getElementById('map-popup').style.display='none'">Закрыть</button>
-        </div>
+        </section>
 
         <section id="screen-list" class="screen">
             <div class="toolbar">
@@ -60,7 +54,7 @@
                     <button class="btn btn-outline" style="color: #15803d; border-color: #bbf7d0;" onclick="simulateLogout()">Выйти</button>
                 </div>
 
-                <h2>Добавить лайфхак</h2>
+                <h2>Добавить туристический лайфхак</h2>
                 <form id="hack-form" onsubmit="handleFormSubmit(event)">
                     <div class="form-group">
                         <label for="form-place">Название места / Локация</label>
@@ -81,7 +75,7 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="form-text">Описание лайфхака</label>
+                        <label for="form-text">Текст лайфхака (Суть совета и алгоритм экономии)</label>
                         <textarea id="form-text" class="form-control" rows="4" placeholder="Например: После 19:00 действует скидка..." required></textarea>
                         <div class="error-msg" id="text-error">Текст лайфхака должен быть длиннее 10 символов.</div>
                     </div>
@@ -95,7 +89,7 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="form-url">Ссылка на источник (Необязательно)</label>
+                        <label for="form-url">Ссылка на источник / пруф (Необязательно)</label>
                         <input type="url" id="form-url" class="form-control" placeholder="https://example.com">
                     </div>
                     <button type="submit" class="btn" style="width: 100%; padding: 0.75rem;">Отправить на модерацию</button>
@@ -105,10 +99,12 @@
     </main>
 
     <footer>
-        &copy; Разработка сайта с агрегацией полезной информации для туристов | Прабхудесай Анил | Практика УП.11
+        &copy; 2026 Проект Разработки ПО «HackTheMap» | Студент: Anil_Dev | Практика УП.11
     </footer>
 
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBw-fXMHuVyM5umo0KETJcSLcGTWXiKx4E&callback=initMap"></script>>
+    <script>
+        (g=>{var h=window,e=ams=h.googles||(h.googles={}),a=e.maps||(e.maps={}),r=new RegExp;a.importLibrary=function(f,g){return a.importLibrary[f]||(a.importLibrary[f]=new Promise(async(h,e)=>{await new Promise(r=>setTimeout(r));var a=document.createElement("script");a.src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBw-fXMHuVyM5umo0KETJcSLcGTWXiKx4E&loading=async&callback=initMap";g&&Object.keys(g).forEach(k=>a[k]=g[k]);document.head.appendChild(a)}))}})();
+    </script>
     
     <script src="script.js"></script>
 </body>
