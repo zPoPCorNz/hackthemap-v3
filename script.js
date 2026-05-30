@@ -1,4 +1,3 @@
-// БАЗА ДАННЫХ
 let dataset = [
     { id: 1, place: "Mövenpick Hotel Sukhumvit 15", category: "Отели", tag: "Каждый день", rating: 30, text: "Бесплатный шоколадный час для постояльцев отеля. Если вы не проживаете в отеле, можно зайти с улицы, оплатив 150 THB с человека через официальный сайт.", url: "https://movenpick.accor.com/", lat: 13.743120, lng: 100.559320 },
     { id: 2, place: "Safari World", category: "Развлечения", tag: "Для групп", rating: 45, text: "Работает каждый день. Покупать билеты на кассе дорого — используйте скидки на билеты через приложение Klook прямо у входа.", url: "https://www.klook.com/", lat: 13.865383, lng: 100.702952 },
@@ -11,7 +10,6 @@ let map = null;
 let markers = [];
 let infoWindow = null;
 
-// Стили темной темы для карты
 const darkMapStyles = [
     { elementType: "geometry", stylers: [{ color: "#1e293b" }] },
     { elementType: "labels.text.stroke", stylers: [{ color: "#1e293b" }] },
@@ -20,9 +18,8 @@ const darkMapStyles = [
     { featureType: "water", elementType: "geometry", stylers: [{ color: "#0f172a" }] }
 ];
 
-// ИНИЦИАЛИЗАЦИЯ КАРТЫ (v3.56+)
+
 async function initMap() {
-    // Явно подгружаем необходимые библиотеки карт нового поколения
     const { Map } = await google.maps.importLibrary("maps");
     const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
 
@@ -31,7 +28,7 @@ async function initMap() {
     map = new Map(document.getElementById("map-container"), {
         zoom: 13,
         center: asokeCoordinates,
-        mapId: "DEMO_MAP_ID", // Демо-id, обязательный для Advanced Markers и темных стилей
+        mapId: "DEMO_MAP_ID",
         styles: document.body.classList.contains('dark-theme') ? darkMapStyles : []
     });
 
@@ -39,13 +36,11 @@ async function initMap() {
     renderMarkers(AdvancedMarkerElement);
 }
 
-// ОТРИСОВКА СОВРЕМЕННЫХ МАРКЕРОВ
 function renderMarkers(AdvancedMarkerElement) {
     markers.forEach(m => m.setMap(null));
     markers = [];
 
     dataset.forEach(item => {
-        // Заменяем картинки на кастомные HTML-элементы, чтобы избежать ошибок HTTPS/Mixed Content
         const pinElement = document.createElement("div");
         pinElement.style.width = "18px";
         pinElement.style.height = "18px";
@@ -53,11 +48,10 @@ function renderMarkers(AdvancedMarkerElement) {
         pinElement.style.border = "2px solid white";
         pinElement.style.boxShadow = "0 2px 6px rgba(0,0,0,0.3)";
 
-        // Подбираем цвет под категорию места
-        if (item.category === "Отели") pinElement.style.backgroundColor = "#0284c7"; // Синий
-        else if (item.category === "Парки") pinElement.style.backgroundColor = "#10b981"; // Зеленый
-        else if (item.category === "Еда") pinElement.style.backgroundColor = "#f97316"; // Оранжевый
-        else pinElement.style.backgroundColor = "#a855f7"; // Развлечения — Фиолетовый
+        if (item.category === "Отели") pinElement.style.backgroundColor = "#0284c7";
+        else if (item.category === "Парки") pinElement.style.backgroundColor = "#10b981"; 
+        else if (item.category === "Еда") pinElement.style.backgroundColor = "#f97316";
+        else pinElement.style.backgroundColor = "#a855f7";
 
         const marker = new AdvancedMarkerElement({
             position: { lat: item.lat, lng: item.lng },
@@ -83,7 +77,6 @@ function renderMarkers(AdvancedMarkerElement) {
     });
 }
 
-// НАВИГАЦИЯ МЕЖДУ ЭКРАНАМИ
 function switchScreen(screenName) {
     document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
     document.querySelectorAll('.toggle-btn').forEach(el => el.classList.remove('active'));
@@ -105,7 +98,6 @@ function switchScreen(screenName) {
     }
 }
 
-// РЕНДЕРИНГ СПИСКА ЛАЙФХАКОВ
 function renderList(filterTag) {
     const container = document.getElementById('hacks-container');
     if (!container) return; 
@@ -136,7 +128,6 @@ function renderList(filterTag) {
     });
 }
 
-// ПЕРЕКЛЮЧАТЕЛЬ ТЕМЫ
 function toggleTheme() {
     const isDark = document.body.classList.toggle('dark-theme');
     if (map) {
@@ -201,7 +192,6 @@ function handleFormSubmit(event) {
     alert("Успешно отправлено!");
     document.getElementById('hack-form').reset();
     
-    // Безопасный вызов отрисовки маркеров нового поколения
     if (typeof google !== 'undefined' && map) { 
         google.maps.importLibrary("marker").then(({ AdvancedMarkerElement }) => {
             renderMarkers(AdvancedMarkerElement);
@@ -210,7 +200,6 @@ function handleFormSubmit(event) {
     switchScreen('list');
 }
 
-// Запуск списка при старте страницы
 document.addEventListener("DOMContentLoaded", () => {
     renderList('Все');
 });
