@@ -1,4 +1,4 @@
-// БАЗА ДАННЫХ: Данные, синхронизированные со структурой PostgreSQL и реальными координатами Асок (Бангкок)
+// БАЗА ДАННЫХ
 let dataset = [
     { id: 1, place: "Mövenpick Hotel Sukhumvit 15", category: "Отели", tag: "Каждый день", rating: 30, text: "Бесплатный шоколадный час для постояльцев отеля. Если вы не проживаете в отеле, можно зайти с улицы, оплатив 150 THB с человека через официальный сайт.", url: "https://movenpick.accor.com/", lat: 13.743120, lng: 100.559320 },
     { id: 2, place: "Safari World", category: "Развлечения", tag: "Для групп", rating: 45, text: "Работает каждый день. Покупать билеты на кассе дорого — используйте скидки на билеты через приложение Klook прямо у входа.", url: "https://www.klook.com/", lat: 13.865383, lng: 100.702952 },
@@ -9,74 +9,73 @@ let dataset = [
 let isAuthorized = false;
 let map;
 let markers = [];
-let infoWindow; // Глобальный объект для красивого всплывающего окна Google
+let infoWindow;
 
-// ИНИЦИАЛИЗАЦИЯ КАРТЫ GOOGLE MAPS
-function initMap() {
+// Новая асинхронная инициализация по стандартам Google 2024-2026
+async function initMap() {
+    // Импортируем необходимые библиотеки карт нового поколения
+    await google.maps.importLibrary("maps");
+    await google.maps.importLibrary("marker");
+
     const asokeCoordinates = { lat: 13.740263, lng: 100.558362 };
     
+    // Для AdvancedMarkerElement обязательно требуется mapId (используем демо-id)
     map = new google.maps.Map(document.getElementById("map-container"), {
         zoom: 13,
-        center: asokeCoordinates
+        center: asokeCoordinates,
+        mapId: "DEMO_MAP_ID" 
     });
 
-    // Создаем единый экземпляр всплывающего окна для всей карты
     infoWindow = new google.maps.InfoWindow();
-
     renderMarkers();
 }
 
-// ОТРИСОВКА И КАСТОМИЗАЦИЯ МАРКЕРОВ
+// ОТРИСОВКА МАРКЕРОВ НОВОГО ПОКОЛЕНИЯ (AdvancedMarkerElement)
 function renderMarkers() {
-    // Сначала полностью очищаем карту от старых маркеров
     markers.forEach(m => m.setMap(null));
     markers = [];
 
     dataset.forEach(item => {
-        // Подбираем цвет маркера под категорию места
-        let markerIcon = "https://maps.google.com/mapfiles/ms/icons/red-dot.png"; // Красный по умолчанию
+        // Создаем красивый кастомный DOM-элемент вместо старой картинки-булавки
+        const pinElement = document.createElement("div");
+        pinElement.style.width = "16px";
+        pinElement.style.height = "16px";
+        pinElement.style.borderRadius = "50%";
+        pinElement.style.border = "2px solid white";
+        pinElement.style.boxShadow = "0 2px 4px rgba(0,0,0,0.3)";
 
-        if (item.category === "Отели") {
-            markerIcon = "https://maps.google.com/mapfiles/ms/icons/blue-dot.png"; // Синий
-        } else if (item.category === "Парки") {
-            markerIcon = "https://maps.google.com/mapfiles/ms/icons/green-dot.png"; // Зеленый
-        } else if (item.category === "Еда") {
-            markerIcon = "https://maps.google.com/mapfiles/ms/icons/orange-dot.png"; // Оранжевый
-        } else if (item.category === "Развлечения") {
-            markerIcon = "https://maps.google.com/mapfiles/ms/icons/purple-dot.png"; // Фиолетовый
-        }
+        // Цвета под категории
+        if (item.category === "Отели") pinElement.style.backgroundColor = "#0284c7"; // Синий
+        else if (item.category === "Парки") pinElement.style.backgroundColor = "#10b981"; // Зеленый
+        else if (item.category === "Еда") pinElement.style.backgroundColor = "#f97316"; // Оранжевый
+        else pinElement.style.backgroundColor = "#a855f7"; // Развлечения - Фиолетовый
 
-        const marker = new google.maps.Marker({
+        // Инициализируем AdvancedMarkerElement
+        const marker = new google.maps.marker.AdvancedMarkerElement({
             position: { lat: item.lat, lng: item.lng },
             map: map,
             title: item.place,
-            icon: markerIcon,
-            animation: google.maps.Animation.DROP
+            content: pinElement
         });
 
-        // КЛИК НА МАРКЕР: Генерируем HTML-контент прямо внутри InfoWindow над меткой
         marker.addListener("click", () => {
             const htmlContent = `
-                <div style="color: #1e293b; max-width: 250px; font-family: 'Segoe UI', sans-serif; padding: 4px;">
+                <div style="color: #1e293b; max-width: 250px; font-family: sans-serif; padding: 4px;">
                     <h3 style="margin: 0 0 4px 0; font-size: 14px; color: #0f172a; font-weight: bold;">${item.place}</h3>
                     <p style="margin: 0 0 6px 0; font-size: 12px; font-weight: 600; color: #0284c7;">${item.category}</p>
-                    <p style="margin: 0; font-size: 12px; line-height: 1.4; color: #64748b; text-align: justify;">${item.text}</p>
+                    <p style="margin: 0; font-size: 12px; line-height: 1.4; color: #64748b;">${item.text}</p>
                 </div>
             `;
-            
-            // Наполняем окно контентом, привязываем к нажатому маркеру и открываем
             infoWindow.setContent(htmlContent);
             infoWindow.open(map, marker);
-            
-            // Плавно сдвигаем карту к маркеру
-            map.panTo(marker.getPosition());
+            map.panTo(marker.position);
         });
 
         markers.push(marker);
     });
 }
 
-// НАВИГАЦИЯ МЕЖДУ ЭКРАНАМИ (SPA)
+// НАВИГАЦИЯ
 function switchScreen(screenName) {
     document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
     document.querySelectorAll('.toggle-btn').forEach(el => el.classList.remove('active'));
@@ -86,20 +85,21 @@ function switchScreen(screenName) {
         document.getElementById(`btn-nav-${screenName}`).classList.add('active');
     }
     
-    // Закрываем окно на карте при уходе с экрана карты
     if(screenName !== 'map' && infoWindow) {
         infoWindow.close();
     }
     
-    if(screenName === 'list') { renderList('Все'); }
+    if(screenName === 'list') { 
+        renderList('Все'); 
+    }
 }
 
-// РЕНДЕРИНГ И ФИЛЬТРАЦИЯ ЛЕНТЫ ЛАЙФХАКОВ (ЭКРАН 2)
+// СТАБИЛЬНЫЙ РЕНДЕРИНГ ЛЕНТЫ
 function renderList(filterTag) {
     const container = document.getElementById('hacks-container');
-    container.innerHTML = '';
+    if (!container) return; 
     
-    // Сортировка по убыванию рейтинга
+    container.innerHTML = '';
     let sortedData = [...dataset].sort((a,b) => b.rating - a.rating);
 
     sortedData.forEach(item => {
@@ -127,7 +127,7 @@ function renderList(filterTag) {
 
 function filterByTag(tag, element) {
     document.querySelectorAll('.tag-badge').forEach(el => el.classList.remove('selected'));
-    element.classList.add('selected');
+    if (element) element.classList.add('selected');
     renderList(tag);
 }
 
@@ -135,16 +135,21 @@ function vote(id) {
     let target = dataset.find(x => x.id === id);
     if(target) {
         target.rating += 1;
-        document.getElementById(`rat-${id}`).innerText = target.rating;
+        const ratingElement = document.getElementById(`rat-${id}`);
+        if (ratingElement) ratingElement.innerText = target.rating;
     }
 }
 
-// ИМИТАЦИЯ GOOGLE OAUTH
 function simulateGoogleLogin() {
     isAuthorized = true;
     document.getElementById('auth-box').style.display = 'none';
     document.getElementById('welcome-box').style.display = 'flex';
     document.getElementById('header-user').style.display = 'flex';
+}
+
+// ТЕМНАЯ ТЕМА
+function toggleTheme() {
+    document.body.classList.toggle('dark-theme');
 }
 
 function simulateLogout() {
@@ -154,31 +159,16 @@ function simulateLogout() {
     document.getElementById('header-user').style.display = 'none';
 }
 
-// ПЕРЕКЛЮЧАТЕЛЬ ТЕМНОЙ ТЕМЫ
-function toggleTheme() {
-    document.body.classList.toggle('dark-theme');
-}
-
-// ВАЛИДАЦИЯ И ОБРАБОТКА ФОРМЫ
 function handleFormSubmit(event) {
     event.preventDefault();
-    
     if(!isAuthorized) {
         alert("Доступ заблокирован! Пожалуйста, выполните вход через Google OAuth.");
         return;
     }
 
     const textInput = document.getElementById('form-text').value;
-    const errorElement = document.getElementById('text-error');
+    if(textInput.trim().length < 10) return;
 
-    if(textInput.trim().length < 10) {
-        errorElement.style.display = 'block';
-        return;
-    } else {
-        errorElement.style.display = 'none';
-    }
-
-    // Добавление новой записи с автоматической генерацией координат в районе Асок
     const newHack = {
         id: dataset.length + 1,
         place: document.getElementById('form-place').value,
@@ -188,17 +178,23 @@ function handleFormSubmit(event) {
         text: textInput,
         url: document.getElementById('form-url').value,
         lat: 13.740263 + (Math.random() - 0.5) * 0.01,
-        lng: 100.558362 + (Math.random() - 0.5) * 0.01
+        lng: 100.5 Tib * 0.01
     };
 
     dataset.push(newHack);
-    alert("Успешно отправлено! Лайфхак сохранен в базе со статусом 'pending' и ожидает проверки модератором Anil.");
+    alert("Успешно отправлено!");
     document.getElementById('hack-form').reset();
-    
-    // Перерисовываем маркеры на карте, чтобы новая точка сразу появилась
-    if (typeof google !== 'undefined' && google.maps) { renderMarkers(); }
+    if (typeof google !== 'undefined') { renderMarkers(); }
     switchScreen('list');
 }
 
-// Первичный рендеринг списка
-renderList('Все');
+// Запуск кода и автоматический вызов API после полной загрузки страницы
+document.addEventListener("DOMContentLoaded", () => {
+    renderList('Все');
+    if (typeof google !== 'undefined') {
+        initMap();
+    } else {
+        // Если скрипт карт загружается асинхронно, вешаем слушатель на глобальное событие окон
+        window.initMap = initMap;
+    }
+});
