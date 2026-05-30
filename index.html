@@ -21,7 +21,7 @@
 
     <main>
         <section id="screen-map" class="screen active">
-            <div id="map-container" style="width: 100%; height: 550px;"></div>
+            <div id="map-container"></div>
         </section>
 
         <section id="screen-list" class="screen">
@@ -35,7 +35,6 @@
                 </div>
                 <div style="font-size: 0.9rem; color: var(--text-muted);">Сортировка: <strong>По рейтингу полезности</strong></div>
             </div>
-
             <div class="hacks-list" id="hacks-container"></div>
         </section>
 
@@ -50,7 +49,7 @@
                 </div>
 
                 <div id="welcome-box" class="auth-status" style="display: none; background: #f0fdf4; border-color: #bbf7d0;">
-                    <div class="user-badge"><div class="user-avatar" style="background: var(--success); color:white;">A</div> Вы вошли как: &nbsp;<strong id="user-display-name">Anil</strong></div>
+                    <div class="user-badge"><div class="user-avatar" style="background: var(--success); color:white;">A</div> Вы вошли как: &nbsp;<strong>Anil</strong></div>
                     <button class="btn btn-outline" style="color: #15803d; border-color: #bbf7d0;" onclick="simulateLogout()">Выйти</button>
                 </div>
 
@@ -102,9 +101,7 @@
         &copy; 2026 Проект Разработки ПО «HackTheMap» | Студент: Anil_Dev | Практика УП.11
     </footer>
 
-    <script>
-        (g=>{var h=window,e=ams=h.googles||(h.googles={}),a=e.maps||(e.maps={}),r=new RegExp;a.importLibrary=function(f,g){return a.importLibrary[f]||(a.importLibrary[f]=new Promise(async(h,e)=>{await new Promise(r=>setTimeout(r));var a=document.createElement("script");a.src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBw-fXMHuVyM5umo0KETJcSLcGTWXiKx4E&loading=async";g&&Object.keys(g).forEach(k=>a[k]=g[k]);document.head.appendChild(a);h()}))}})();
-    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBw-fXMHuVyM5umo0KETJcSLcGTWXiKx4E&callback=initMap" async defer></script>
     <script src="script.js"></script>
 </body>
 </html>

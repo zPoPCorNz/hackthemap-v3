@@ -7,55 +7,50 @@ let dataset = [
 ];
 
 let isAuthorized = false;
-let map;
+let map = null;
 let markers = [];
-let infoWindow;
+let infoWindow = null;
 
-// Новая асинхронная инициализация по стандартам Google 2024-2026
-async function initMap() {
-    // Импортируем необходимые библиотеки карт нового поколения
-    await google.maps.importLibrary("maps");
-    await google.maps.importLibrary("marker");
+// Безопасные JSON-стили темной темы для предотвращения сбоев API
+const darkMapStyles = [
+    { elementType: "geometry", stylers: [{ color: "#1e293b" }] },
+    { elementType: "labels.text.stroke", stylers: [{ color: "#1e293b" }] },
+    { elementType: "labels.text.fill", stylers: [{ color: "#94a3b8" }] },
+    { featureType: "road", elementType: "geometry", stylers: [{ color: "#334155" }] },
+    { featureType: "water", elementType: "geometry", stylers: [{ color: "#0f172a" }] }
+];
 
+// ИНИЦИАЛИЗАЦИЯ КАРТЫ
+function initMap() {
     const asokeCoordinates = { lat: 13.740263, lng: 100.558362 };
     
-    // Для AdvancedMarkerElement обязательно требуется mapId (используем демо-id)
     map = new google.maps.Map(document.getElementById("map-container"), {
         zoom: 13,
         center: asokeCoordinates,
-        mapId: "DEMO_MAP_ID" 
+        styles: document.body.classList.contains('dark-theme') ? darkMapStyles : []
     });
 
     infoWindow = new google.maps.InfoWindow();
     renderMarkers();
 }
 
-// ОТРИСОВКА МАРКЕРОВ НОВОГО ПОКОЛЕНИЯ (AdvancedMarkerElement)
+// ОТРИСОВКА МАРКЕРОВ
 function renderMarkers() {
     markers.forEach(m => m.setMap(null));
     markers = [];
 
     dataset.forEach(item => {
-        // Создаем красивый кастомный DOM-элемент вместо старой картинки-булавки
-        const pinElement = document.createElement("div");
-        pinElement.style.width = "16px";
-        pinElement.style.height = "16px";
-        pinElement.style.borderRadius = "50%";
-        pinElement.style.border = "2px solid white";
-        pinElement.style.boxShadow = "0 2px 4px rgba(0,0,0,0.3)";
+        let markerColor = "red";
+        if (item.category === "Отели") markerColor = "blue";
+        else if (item.category === "Парки") markerColor = "green";
+        else if (item.category === "Еда") markerColor = "orange";
+        else if (item.category === "Развлечения") markerColor = "purple";
 
-        // Цвета под категории
-        if (item.category === "Отели") pinElement.style.backgroundColor = "#0284c7"; // Синий
-        else if (item.category === "Парки") pinElement.style.backgroundColor = "#10b981"; // Зеленый
-        else if (item.category === "Еда") pinElement.style.backgroundColor = "#f97316"; // Оранжевый
-        else pinElement.style.backgroundColor = "#a855f7"; // Развлечения - Фиолетовый
-
-        // Инициализируем AdvancedMarkerElement
-        const marker = new google.maps.marker.AdvancedMarkerElement({
+        const marker = new google.maps.Marker({
             position: { lat: item.lat, lng: item.lng },
             map: map,
             title: item.place,
-            content: pinElement
+            icon: `http://maps.google.com/mapfiles/ms/icons/${markerColor}-dot.png`
         });
 
         marker.addListener("click", () => {
@@ -68,21 +63,24 @@ function renderMarkers() {
             `;
             infoWindow.setContent(htmlContent);
             infoWindow.open(map, marker);
-            map.panTo(marker.position);
+            map.panTo(marker.getPosition());
         });
 
         markers.push(marker);
     });
 }
 
-// НАВИГАЦИЯ
+// НАВИГАЦИЯ МЕЖДУ ЭКРАНАМИ
 function switchScreen(screenName) {
     document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
     document.querySelectorAll('.toggle-btn').forEach(el => el.classList.remove('active'));
     
-    document.getElementById(`screen-${screenName}`).classList.add('active');
+    const targetScreen = document.getElementById(`screen-${screenName}`);
+    if (targetScreen) targetScreen.classList.add('active');
+
     if(screenName === 'map' || screenName === 'list') {
-        document.getElementById(`btn-nav-${screenName}`).classList.add('active');
+        const targetBtn = document.getElementById(`btn-nav-${screenName}`);
+        if (targetBtn) targetBtn.classList.add('active');
     }
     
     if(screenName !== 'map' && infoWindow) {
@@ -94,7 +92,7 @@ function switchScreen(screenName) {
     }
 }
 
-// СТАБИЛЬНЫЙ РЕНДЕРИНГ ЛЕНТЫ
+// РЕНДЕРИНГ СПИСКА
 function renderList(filterTag) {
     const container = document.getElementById('hacks-container');
     if (!container) return; 
@@ -125,6 +123,17 @@ function renderList(filterTag) {
     });
 }
 
+// ДИНАМИЧЕСКИЙ СИНХРОННЫЙ ПЕРЕКЛЮЧАТЕЛЬ ТЕМЫ
+function toggleTheme() {
+    const isDark = document.body.classList.toggle('dark-theme');
+    
+    if (map) {
+        map.setOptions({
+            styles: isDark ? darkMapStyles : []
+        });
+    }
+}
+
 function filterByTag(tag, element) {
     document.querySelectorAll('.tag-badge').forEach(el => el.classList.remove('selected'));
     if (element) element.classList.add('selected');
@@ -145,11 +154,6 @@ function simulateGoogleLogin() {
     document.getElementById('auth-box').style.display = 'none';
     document.getElementById('welcome-box').style.display = 'flex';
     document.getElementById('header-user').style.display = 'flex';
-}
-
-// ТЕМНАЯ ТЕМА
-function toggleTheme() {
-    document.body.classList.toggle('dark-theme');
 }
 
 function simulateLogout() {
@@ -178,23 +182,17 @@ function handleFormSubmit(event) {
         text: textInput,
         url: document.getElementById('form-url').value,
         lat: 13.740263 + (Math.random() - 0.5) * 0.01,
-        lng: 100.5 Tib * 0.01
+        lng: 100.558362 + (Math.random() - 0.5) * 0.01
     };
 
     dataset.push(newHack);
     alert("Успешно отправлено!");
     document.getElementById('hack-form').reset();
-    if (typeof google !== 'undefined') { renderMarkers(); }
+    if (typeof google !== 'undefined' && map) { renderMarkers(); }
     switchScreen('list');
 }
 
-// Запуск кода и автоматический вызов API после полной загрузки страницы
+// Стартовый запуск при загрузке документа
 document.addEventListener("DOMContentLoaded", () => {
     renderList('Все');
-    if (typeof google !== 'undefined') {
-        initMap();
-    } else {
-        // Если скрипт карт загружается асинхронно, вешаем слушатель на глобальное событие окон
-        window.initMap = initMap;
-    }
 });
