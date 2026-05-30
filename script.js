@@ -23,19 +23,34 @@ function initMap() {
 }
 
 function renderMarkers() {
-    // Удаляем старые маркеры с карты
+    // Очищаем старые маркеры с карты перед перерисовкой
     markers.forEach(m => m.setMap(null));
     markers = [];
 
-    // Расставляем маркеры заново
     dataset.forEach(item => {
+        // ЛОГИКА ЦВЕТА: Выбираем иконку в зависимости от категории места
+        let markerIcon = "https://maps.google.com/mapfiles/ms/icons/red-dot.png"; // Цвет по умолчанию (Красный)
+
+        if (item.category === "Отели") {
+            markerIcon = "https://maps.google.com/mapfiles/ms/icons/blue-dot.png"; // Отели — Синий
+        } else if (item.category === "Парки") {
+            markerIcon = "https://maps.google.com/mapfiles/ms/icons/green-dot.png"; // Парки — Зеленый
+        } else if (item.category === "Еда") {
+            markerIcon = "https://maps.google.com/mapfiles/ms/icons/orange-dot.png"; // Еда — Оранжевый
+        } else if (item.category === "Развлечения") {
+            markerIcon = "https://maps.google.com/mapfiles/ms/icons/purple-dot.png"; // Развлечения — Фиолетовый
+        }
+
+        // Создаем сам маркер на карте Google
         const marker = new google.maps.Marker({
             position: { lat: item.lat, lng: item.lng },
             map: map,
             title: item.place,
-            animation: google.maps.Animation.DROP
+            icon: markerIcon, // Вставляем нашу кастомную цветную иконку!
+            animation: google.maps.Animation.DROP // Красивое падение маркера при загрузке
         });
 
+        // Привязываем клик к маркеру
         marker.addListener("click", () => {
             showMapPopup(item.place, item.category, item.text);
             map.panTo(marker.getPosition());
@@ -168,3 +183,8 @@ function handleFormSubmit(event) {
 
 // Стартовый рендеринг списка
 renderList('Все');
+
+function toggleTheme() {
+    // Переключаем класс у тега body
+    document.body.classList.toggle('dark-theme');
+}
