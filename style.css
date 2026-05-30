@@ -354,7 +354,7 @@ footer {
     border-top: 1px solid var(--border); 
 }
 
-/* Переопределяем цвета переменных для темного режима */
+/* тёмная тема */
 body.dark-theme {
     --bg: #0f172a;
     --card-bg: #1e293b;
