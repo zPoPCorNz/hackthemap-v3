@@ -21,7 +21,7 @@
 
     <main>
         <section id="screen-map" class="screen active">
-            <div id="map-container"></div>
+            <div id="map-container" style="width: 100%; height: 550px;"></div>
         </section>
 
         <section id="screen-list" class="screen">
@@ -103,9 +103,8 @@
     </footer>
 
     <script>
-        (g=>{var h=window,e=ams=h.googles||(h.googles={}),a=e.maps||(e.maps={}),r=new RegExp;a.importLibrary=function(f,g){return a.importLibrary[f]||(a.importLibrary[f]=new Promise(async(h,e)=>{await new Promise(r=>setTimeout(r));var a=document.createElement("script");a.src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBw-fXMHuVyM5umo0KETJcSLcGTWXiKx4E&loading=async&callback=initMap";g&&Object.keys(g).forEach(k=>a[k]=g[k]);document.head.appendChild(a)}))}})();
+        (g=>{var h=window,e=ams=h.googles||(h.googles={}),a=e.maps||(e.maps={}),r=new RegExp;a.importLibrary=function(f,g){return a.importLibrary[f]||(a.importLibrary[f]=new Promise(async(h,e)=>{await new Promise(r=>setTimeout(r));var a=document.createElement("script");a.src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBw-fXMHuVyM5umo0KETJcSLcGTWXiKx4E&loading=async";g&&Object.keys(g).forEach(k=>a[k]=g[k]);document.head.appendChild(a);h()}))}})();
     </script>
-    
     <script src="script.js"></script>
 </body>
 </html>
