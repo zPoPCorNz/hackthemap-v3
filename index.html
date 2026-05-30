@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HackTheMap — Агрегатор лайфхаков</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <a href="#" class="logo" onclick="switchScreen('map')">HackThe<span>Map</span></a>
+        <div class="nav-controls">
+            <button class="btn toggle-btn active" id="btn-nav-map" onclick="switchScreen('map')">🗺️ Карта</button>
+            <button class="btn toggle-btn" id="btn-nav-list" onclick="switchScreen('list')">📜 Список</button>
+            <button class="btn btn-outline" id="btn-nav-add" onclick="switchScreen('add')">➕ Добавить хак</button>
+            <div id="header-user" style="display: none;" class="user-badge"><div class="user-avatar">A</div> Anil</div>
+        </div>
+    </header>
+
+    <main>
+        <section id="screen-map" class="screen active">
+            <div id="map-container"></div>
+            
+            <div class="map-popup" id="map-popup">
+                <h3 id="popup-name">Название места</h3>
+                <p style="font-weight: 600; color: var(--primary);" id="popup-cat">Категория</p>
+                <p id="popup-text">Текст лайфхака...</p>
+                <button class="btn" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;" onclick="document.getElementById('map-popup').style.display='none'">Закрыть</button>
+            </div>
+        </section>
+
+        <section id="screen-list" class="screen">
+            <div class="toolbar">
+                <div class="tags-filter">
+                    <span class="tag-badge selected" onclick="filterByTag('Все', this)">Все теги</span>
+                    <span class="tag-badge" onclick="filterByTag('Бесплатно', this)">Бесплатно</span>
+                    <span class="tag-badge" onclick="filterByTag('Каждый день', this)">Каждый день</span>
+                    <span class="tag-badge" onclick="filterByTag('Доставка', this)">Доставка</span>
+                    <span class="tag-badge" onclick="filterByTag('Для групп', this)">Для групп</span>
+                </div>
+                <div style="font-size: 0.9rem; color: var(--text-muted);">Сортировка: <strong>По рейтингу полезности</strong></div>
+            </div>
+
+            <div class="hacks-list" id="hacks-container"></div>
+        </section>
+
+        <section id="screen-add" class="screen">
+            <div class="form-card">
+                <div id="auth-box" class="auth-status">
+                    <div>
+                        <h4 style="margin-bottom: 0.25rem;">Требуется авторизация</h4>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">Публикация контента доступна только авторизованным пользователям Google.</p>
+                    </div>
+                    <button class="btn" style="background: #ea4335;" onclick="simulateGoogleLogin()">🔴 Войти через Google OAuth</button>
+                </div>
+
+                <div id="welcome-box" class="auth-status" style="display: none; background: #f0fdf4; border-color: #bbf7d0;">
+                    <div class="user-badge"><div class="user-avatar" style="background: var(--success); color:white;">A</div> Вы вошли как: &nbsp;<strong id="user-display-name">Anil</strong></div>
+                    <button class="btn btn-outline" style="color: #15803d; border-color: #bbf7d0;" onclick="simulateLogout()">Выйти</button>
+                </div>
+
+                <h2>Добавить туристический лайфхак</h2>
+                <form id="hack-form" onsubmit="handleFormSubmit(event)">
+                    <div class="form-group">
+                        <label for="form-place">Название места / Локация</label>
+                        <select id="form-place" class="form-control" required>
+                            <option value="Mövenpick Hotel Sukhumvit 15">Mövenpick Hotel Sukhumvit 15</option>
+                            <option value="Safari World">Safari World</option>
+                            <option value="Benjakitti Park">Benjakitti Park</option>
+                            <option value="Paris Mikki (Asoke)">Paris Mikki (Asoke)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="form-cat">Категория</label>
+                        <select id="form-cat" class="form-control" required>
+                            <option value="Отели">Отели</option>
+                            <option value="Развлечения">Развлечения</option>
+                            <option value="Парки">Парки</option>
+                            <option value="Еда">Еда</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="form-text">Текст лайфхака (Суть совета и алгоритм экономии)</label>
+                        <textarea id="form-text" class="form-control" rows="4" placeholder="Например: После 19:00 действует скидка..." required></textarea>
+                        <div class="error-msg" id="text-error">Текст лайфхака должен быть длиннее 10 символов.</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="form-tag">Основной тег</label>
+                        <select id="form-tag" class="form-control" required>
+                            <option value="Каждый день">Каждый день</option>
+                            <option value="Бесплатно">Бесплатно</option>
+                            <option value="Доставка">Доставка</option>
+                            <option value="Для групп">Для групп</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="form-url">Ссылка на источник / пруф (Необязательно)</label>
+                        <input type="url" id="form-url" class="form-control" placeholder="https://example.com">
+                    </div>
+                    <button type="submit" class="btn" style="width: 100%; padding: 0.75rem;">Отправить на модерацию</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        &copy; 2026 Проект Разработки ПО «HackTheMap» | Студент: Anil_Dev | Практика УП.11
+    </footer>
+
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAQXq7KVExfxMrlY07OchMCSXEeQHrwpQI&callback=initMap"></script>
+    
+    <script src="script.js"></script>
+</body>
+</html>
