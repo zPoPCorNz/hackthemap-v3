@@ -185,6 +185,5 @@ function handleFormSubmit(event) {
 renderList('Все');
 
 function toggleTheme() {
-    // Переключаем класс у тега body
     document.body.classList.toggle('dark-theme');
 }

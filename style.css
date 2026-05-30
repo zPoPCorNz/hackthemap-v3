@@ -354,6 +354,7 @@ footer {
     border-top: 1px solid var(--border); 
 }
 
+/* Переопределяем цвета переменных для темного режима */
 body.dark-theme {
     --bg: #0f172a;
     --card-bg: #1e293b;
@@ -361,11 +362,34 @@ body.dark-theme {
     --text-muted: #94a3b8;
     --border: #334155;
 }
-/* Чтобы попап на карте тоже становился темным */
+
+body.dark-theme .hack-card {
+    background: var(--card-bg);
+    border-color: var(--border);
+}
+
 body.dark-theme .map-popup {
     background: #1e293b;
     color: #f8fafc;
+    border-color: var(--border);
 }
+
 body.dark-theme .map-popup h3 {
+    color: #f8fafc;
+}
+
+body.dark-theme .form-card {
+    background: var(--card-bg);
+    border-color: var(--border);
+    color: #f8fafc;
+}
+
+body.dark-theme .form-card h2 {
+    color: #f8fafc;
+}
+
+body.dark-theme .form-control {
+    background: #0f172a;
+    border-color: var(--border);
     color: #f8fafc;
 }
